@@ -1,0 +1,17 @@
+[
+    {
+    "name": "Chat",
+    "url": "mastrogpt/chat",
+    "users": ["admin", "chat"]
+   },
+   {
+    "name": "Display",
+    "url": "mastrogpt/demo"
+   },
+   {
+    "name": "Hello",
+    "url": "mastrogpt/hello"
+   }
+
+]
+ 

@@ -1,0 +1,23 @@
+[
+   {
+    "name": "Postgres",
+    "url": "mastrogpt/sql",
+    "users": ["admin"]
+   },
+   {
+    "name": "Redis",
+    "url": "mastrogpt/cache",
+    "users": ["admin"]
+   },
+   {
+    "name": "S3",
+    "url": "mastrogpt/store",
+    "users": ["admin"]
+   },
+   {
+    "name": "Milvus",
+    "url": "mastrogpt/loader",
+    "users": ["admin"]
+   }
+]
+ 
