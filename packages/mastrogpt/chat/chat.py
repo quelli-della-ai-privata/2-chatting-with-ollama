@@ -74,9 +74,10 @@ def chat(args):
   model = args.get("state", "")
   title = args.get("title", "")
   state = {"state": model }
-  streaming = True
+  res = {}
   print(f"model={model} title={title}")
   try: 
+    url(args, "tags")
     inp = args.get("input", "")
     if inp == "@":
       lines = models(args)
@@ -91,14 +92,10 @@ def chat(args):
         lines =["No model selected.\n", "Please use @prefix to select a model."]
       out = stream(args, lines, state)
     else:
-      try:
-        url(args, "tags")
-        out = "Welcome to Ollama.\nType `@` to see available models.\nType `@<model>` to select a model."
-      except Exception as e:
-        out = str(e)
-
+      out = "Welcome to Ollama.\nType `@` to see available models.\nType `@<model>` to select a model."
+    res["streaming"] = True
   except Exception as e:
     out = f"Error: {str(e)}\n"
-    streaming = False
   
-  return { "output": out, "streaming": streaming}
+  res['output'] = out
+  return res
