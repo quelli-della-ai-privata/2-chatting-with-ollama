@@ -1,35 +1,104 @@
-import os, requests as req, json, socket
+import os, requests as req, json
+import socket, traceback, time
 
+def url(args, cmd):
+  apihost = args.get("OLLAMA_API_HOST", os.getenv("OLLAMA_API_HOST", ""))
+  if apihost == "":
+    raise ValueError("No OLLAMA_API_HOST set. Please use `ops env set OLLAMA_API_HOST <url>` to set it and redeploy.")
+  return f"{apihost}/api/{cmd}"
 
-def url(args):
-  apihost = args.get("MY_OLLAMA_API_HOST", args.get("OLLAMA_API_HOST", os.getenv("OLLAMA_API_HOST")))
-  return f"{apihost}/api/generate"
-
-import json, socket, traceback
-def stream(args, lines):
-  sock = args.get("STREAM_HOST")
-  port = int(args.get("STREAM_PORT"))
+def stream(args, lines, state=None):
   out = ""
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((sock, port))
+  sock = None
+  addr = (args.get("STREAM_HOST", ""),int(args.get("STREAM_PORT") or "0"))
+  if addr[0] and addr:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    sock.connect(addr)
+    print(addr, sock)
+    if state:
+      buf = json.dumps(state).encode("utf-8")
+      #print(buf)
+      sock.sendall(buf)
+      time.sleep(0.01)  # give some time to process the state
+
+  for line in lines:
+    msg = {}
+    # parse lines, cah be
+    # a string
+    # { "response" : ...} 
+    # { "state": .. }
     try:
-      for line in lines:
-        dec = json.loads(line.decode("utf-8")).get("response")
-        msg = {"output": dec }
-        out += dec
-        s.sendall(json.dumps(msg).encode("utf-8"))
-    except Exception as e:
-      traceback.print_exc(e)
-      out = str(e)
+      jo = json.loads(line.decode("utf-8"))
+      if "state" in jo:
+        msg["state"] =  jo.get("state", "")
+      if "response" in jo:
+        res =jo.get("response", "")
+        msg["output"] = res
+        out += res
+    except:
+      msg["output"] = line 
+      out += line
+    
+    if sock is not None:
+        buf = json.dumps(msg).encode("utf-8") 
+        print(buf)
+        sock.sendall(buf)
+  if sock is not None:
+    sock.close()
   return out
 
-def chat(args):
-  llm = url(args)
-  model = args.get("OLLAMA_MODEL", "no model selected")
-  out = f"Welcome to {model}"
-  inp = args.get("input", "")
-  if inp != "":
+def ask(args, model, inp):
     msg = { "model": model, "prompt": inp, "stream": True }
-    lines = req.post(llm, json=msg, stream=True).iter_lines()
-    out = stream(args, lines)
-  return { "output": out, "streaming": True}
+    return req.post(url(args, "generate"), json=msg, stream=True).iter_lines()
+
+def models(args, search=None):
+    model_selected = None
+    msg = {}
+    api = url(args, "tags")
+    data = req.get(api).json()
+    msg["response"] = "models available:\n"
+    yield json.dumps(msg).encode("utf-8")
+    for model in data.get("models", []):
+      time.sleep(0.1)
+      name = model.get("name", "")
+      if search and name.startswith(search):
+        model_selected = name
+        msg["response"] = f"selected {name}\n"
+        msg["state"] = name
+        yield json.dumps(msg).encode("utf-8")
+        break
+      msg["response"] = name+"\n"
+      yield json.dumps(msg).encode("utf-8")
+
+def chat(args):
+  model = args.get("state", "")
+  title = args.get("title", "")
+  state = {"state": model }
+  streaming = True
+  print(f"model={model} title={title}")
+  try: 
+    inp = args.get("input", "")
+    if inp == "@":
+      lines = models(args)
+      out = stream(args, lines, state)
+    elif inp.startswith("@"):
+      lines = models(args, inp[1:])
+      out = stream(args, lines, state)
+    elif inp != "":
+      if model != "": 
+        lines = ask(args, model, inp)
+      else:
+        lines =["No model selected.\n", "Please use @prefix to select a model."]
+      out = stream(args, lines, state)
+    else:
+      try:
+        url(args, "tags")
+        out = "Welcome to Ollama.\nType `@` to see available models.\nType `@<model>` to select a model."
+      except Exception as e:
+        out = str(e)
+
+  except Exception as e:
+    out = f"Error: {str(e)}\n"
+    streaming = False
+  
+  return { "output": out, "streaming": streaming}

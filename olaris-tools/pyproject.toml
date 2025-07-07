@@ -1,0 +1,9 @@
+[project]
+name = "olaris-tools"
+version = "0.1.0"
+description = "Tools"
+requires-python = ">=3.13"
+dependencies = [
+    "bcrypt>=4.3.0",
+    "prompt-toolkit>=3.0.51",
+]
