@@ -1,6 +1,6 @@
 [
     {
-    "name": "Chat",
+    "name": "Ollama",
     "url": "mastrogpt/chat",
     "users": ["admin", "chat"]
    },
@@ -12,6 +12,4 @@
     "name": "Hello",
     "url": "mastrogpt/hello"
    }
-
 ]
- 

@@ -14,13 +14,13 @@ def loader(args):
   print(args)
   collection = "default"
   limit = 10
-  sp = args.get("state", "").split(":")
-  if len(sp) > 0 and len(sp[0]) > 0:
-    collection = sp[0]
-  if len(sp) > 1:
-    try:
-      limit = int(sp[1])
-    except: pass
+  try:
+    sp = args.get("state", "").split(":")
+    if len(sp) > 0 and len(sp[0]) > 0:
+      collection = sp[0]
+    if len(sp) > 1:
+        limit = int(sp[1])
+  except: pass
   print(collection, limit)
 
   out = f"{USAGE}Current collection is {collection} with limit {limit}"

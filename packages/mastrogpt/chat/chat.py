@@ -3,8 +3,6 @@ import socket, traceback, time
 
 def url(args, cmd):
   apihost = args.get("OLLAMA_API_HOST", os.getenv("OLLAMA_API_HOST", ""))
-  if apihost == "":
-    raise ValueError("No OLLAMA_API_HOST set. Please use `ops env add OLLAMA_API_HOST=<url>` to set it and redeploy.")
   return f"{apihost}/api/{cmd}"
 
 def stream(args, lines, state=None):
@@ -52,7 +50,6 @@ def ask(args, model, inp):
     return req.post(url(args, "generate"), json=msg, stream=True).iter_lines()
 
 def models(args, search=None):
-    model_selected = None
     msg = {}
     api = url(args, "tags")
     data = req.get(api).json()
@@ -62,7 +59,6 @@ def models(args, search=None):
       time.sleep(0.1)
       name = model.get("name", "")
       if search and name.startswith(search):
-        model_selected = name
         msg["response"] = f"selected {name}\n"
         msg["state"] = name
         yield json.dumps(msg).encode("utf-8")
@@ -70,32 +66,37 @@ def models(args, search=None):
       msg["response"] = name+"\n"
       yield json.dumps(msg).encode("utf-8")
 
+USAGE= """Welcome to Ollama.
+Type `@` to see available models.
+Type `@prefix` to select a model."
+"""
+
+NOAPIHOST="""No OLLAMA_API_HOST set.
+Please use `ops env add OLLAMA_API_HOST=<url>`
+to set it and redeploy.
+"""
+
 def chat(args):
+  if args.get("OLLAMA_API_HOST", os.getenv("OLLAMA_API_HOST", "")) == "":
+    return {"output": NOAPIHOST}
+
   model = args.get("state", "")
   title = args.get("title", "")
   state = {"state": model }
-  res = {}
+  inp = args.get("input", "")
+  out = USAGE
   print(f"model={model} title={title}")
-  try: 
-    url(args, "tags")
-    inp = args.get("input", "")
-    if inp == "@":
-      lines = models(args)
-      out = stream(args, lines, state)
-    elif inp.startswith("@"):
-      lines = models(args, inp[1:])
-      out = stream(args, lines, state)
-    elif inp != "":
-      if model != "": 
-        lines = ask(args, model, inp)
-      else:
-        lines =["No model selected.\n", "Please use @prefix to select a model."]
-      out = stream(args, lines, state)
+  if inp == "@":
+    lines = models(args)
+    out = stream(args, lines, state)
+  elif inp.startswith("@"):
+    lines = models(args, inp[1:])
+    out = stream(args, lines, state)
+  elif inp != "":
+    if model != "": 
+      lines = ask(args, model, inp)
     else:
-      out = "Welcome to Ollama.\nType `@` to see available models.\nType `@<model>` to select a model."
-    res["streaming"] = True
-  except Exception as e:
-    out = f"Error: {str(e)}\n"
+      lines =["No model selected.\n", "Please use @prefix to select a model."]
+    out = stream(args, lines, state)
   
-  res['output'] = out
-  return res
+  return { "output": out, "streaming": True }
