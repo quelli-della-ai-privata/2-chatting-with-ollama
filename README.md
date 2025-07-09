@@ -14,13 +14,13 @@ html: true
 
 # MastroGPT starter kit 
 
-Welcome to the starter kit to build your Private AI applications on Apache OpenServerless
+### Build your serverless Private AI applications
 
 
 ---
 # Agenda
 1. Install `ops`
-2. Install `miniops.me``
+2. Install `miniops.me`
 3. Deploy locally the starter kit on `miniops.me`
 4. Configure Ollama
 5. Change passwords
