@@ -86,9 +86,9 @@ ops ide deploy
 
 ```
 # list the user
-ops tool user
+ops tools user
 # update the user password
-ops tool user admin --update
+ops tools user admin --update
 # also demo and chat
 ```
 
