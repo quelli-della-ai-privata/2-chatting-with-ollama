@@ -12,104 +12,58 @@ html: true
 
 ![width:800px ](https://raw.githubusercontent.com/apache/openserverless/refs/heads/main/assets/logos/png/os-logo-full-horizontal-transparent.png)
 
-# MastroGPT starter kit 
+# A chat application
 
-### Build your serverless Private AI applications
-
+### Develop a chat application connecting to Ollama
 
 ---
 # Agenda
-1. Install `ops`
-2. Install `miniops.me`
-3. Deploy locally the starter kit on `miniops.me`
-4. Configure Ollama
-5. Change passwords
-6. Deploy the starter kit in production
+
+1. Connecting to Ollama
+2. List models
+3. Simple Chat
+4. Add streaming
 
 ---
+# 1. Connecting to Ollama
 
-# Install `ops`, the CLI
+- Ensure the OLLAMA_API_HOST is correct
 
-## Linux/Mac
+```
+read -s PASS
+export URL=https://demo:$PASS@ollamatest.nuvolaris.io
+curl $URL
+```
 
-# `curl -sL bit.ly/get-ops | bash`
-
-## Windows
-
-## `powershell -c "irm bit.ly/get-ops-exe | iex"`
-
----
-
-# Install  `miniops.me`, the local server
-
-## 1. Dowload **Docker Desktop**
-
-## 2. `ops setup mini`
-
-## That's it. Really.
-#### Just be patient as it can take several minutes to install.
-
---- 
-
-# Deploy the starter kit
-
-## 1. `ops ide login devel http://miniops.me`
-
-### Password is in `.ops/devel.password` in your home
-
-## 2. `ops ide deploy`
-
-### This will deploy the starter kit
-
-## 3. `http://devel.miniops.me`
-
-### Default with `admin/GPTmaster`
-
----
-
-# Configure an Ollama server
-
-### `ops env add OLLAMA_API_HOST=<url>`
-If you have a local Ollama use: 
-
-#### `http://host.docker.internal:11434`
-
-#### Repeat the login to pick the secrets and  redeploy
+- Connecting to Ollama
 
 ```
 ops ide login devel http://miniops.me
-ops ide deploy
+echo OLLAMA_URL=$URL >.env
 ```
+--- 
 
+# 2. List models
+
+```python
+import os, requests
+args = {}
+url = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
+!curl {url}
+url_models = f"{url}/api/tags"
+!curl {url_models} | jq .
+models = requests.get(url_models).json()
+names = [ i.get("name") for i in models.get("models")]
+```
 ---
-# Change the passwords
 
-```
-# list the user
-ops tools user
-# update the user password
-ops tools user admin --update
-# also demo and chat
-```
+# Deploy the list models
 
-## Redeploy the login action
-
-### `ops ide deploy mastrogpt/login`
-
----
-# Deploy in production
-
-You need an account on a production server
-
-```
-$ ops ide login
-*** Configuring Access to OpenServerless ***
-Enter Apihost: https://nuvolaris.org
-Enter Username: qdaip
-Enter Password: 
-Successfully logged in as qdaip.
-ok: whisk auth set. Run 'wsk property get --auth' to see the new value.
-ok: whisk API host set to https://nuvolaris.org
-OpenServerless host and auth set successfully. You are now ready to use ops!
-````
-Assuming Ollama is configured, `https://qdaip.nuvolaris.org`
+- Create Action
+`ops tools new models ollama`
+- Write Action Code
+- Add to the index
+- Deploy
+`ops ide deploy`
+- Invoke
+`ops invoke ollama/models`

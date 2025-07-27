@@ -2,6 +2,12 @@ version: 3
 
 tasks:
 
+  cli:
+    silent: true
+    desc: run cli commands
+    cmds:
+      - |
+        uv run ipython
   user:
     silent: true
     desc: manage users
