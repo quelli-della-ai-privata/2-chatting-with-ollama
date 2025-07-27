@@ -57,13 +57,81 @@ names = [ i.get("name") for i in models.get("models")]
 ```
 ---
 
-# Deploy the list models
+# Create the action and pass the secrets
+
+```
+ops tools new models ollama
+```
+
+Add in `__main__.py`
+
+```shell
+#--param "OLLAMA_URL" "$OLLAMA_URL"
+```
+
+Note that if you deploy:
+
+```
+ops ide deploy ollama/models
+```
+
+there is the option `--param OLLAMA_URL "$OLLAMA_URL"`
+
+---
+
+# Deploy the `models` action
 
 - Create Action
 `ops tools new models ollama`
 - Write Action Code
 - Add to the index
-- Deploy
-`ops ide deploy`
-- Invoke
-`ops invoke ollama/models`
+- Deploy `ops ide deploy`
+- Invoke `ops invoke ollama/models`
+
+---
+
+# Exercise
+
+- Modify the `models` so you can:
+   - Read the input (`args.get("input")`)
+   - Show all the informations of a model selected by input
+
+--- 
+# 3. Let's chat with Ollama
+
+```python
+import os, requests
+args = {}
+url = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
+url_generate = f"{url}/api/generate"
+```
+
+You require a post request: 
+
+```python
+MODEL = "llama3.1:8b"
+PROMPT = "who are you"
+msg = {"model":MODEL, "prompt": PROMPT, "stream": False}
+res = requests.post(url_generate, json=msg, stream=False).json()
+res
+print(res.get("response"))
+```
+
+---
+
+# Chat action blueprint
+
+- read `input`
+- invoke ollama
+- return `output`
+
+---
+
+# Exercise
+
+Implement the tests!
+
+- test_models
+- test_models_int
+- test_chat
+- test_chat_int

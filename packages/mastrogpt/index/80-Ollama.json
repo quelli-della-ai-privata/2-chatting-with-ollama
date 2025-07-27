@@ -3,6 +3,16 @@
     "name": "Models",
     "url": "ollama/models",
     "users": ["admin"]
+   },
+   {
+    "name": "Chat",
+    "url": "ollama/chat",
+    "users": ["admin"]
+   },
+   {
+    "name": "Reverse",
+    "url": "saniales/models",
+    "users": ["admin"]
    }
 ]
  
