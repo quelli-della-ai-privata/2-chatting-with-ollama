@@ -2,12 +2,20 @@ version: 3
 
 tasks:
 
+  venv:
+    silent: true
+    desc: initialize the project
+    cmds:
+      - |
+        uv venv
+
   cli:
     silent: true
     desc: run cli commands
     cmds:
       - |
         uv run ipython
+  
   user:
     silent: true
     desc: manage users

@@ -12,7 +12,7 @@
     "remoteEnv": {
         "OPS_BRANCH": "main"
     },
-	"postCreateCommand": "ops -update",
+	"postCreateCommand": "ops -update ; ops tools venv",
 	"customizations": {
 		"vscode": {
 			"extensions": [
