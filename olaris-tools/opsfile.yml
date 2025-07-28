@@ -3,7 +3,7 @@ version: 3
 tasks:
 
   run:
-    silent: true
+    silent: false
     desc: initialize the project
     cmds:
       - |
@@ -14,11 +14,25 @@ tasks:
         test "$1" = "--" && shift
         uv run "$@"
 
+  test:
+    silent: false
+    desc: initialize the project
+    cmds:
+      - |
+        args={{._args_}}
+        # exanded and assigned to positional parameter
+        set -- ${args[@]}
+        # removing the '--' at the beginning required to pass extra flags
+        test "$1" = "--" && shift
+        uv run pytest $OPS_PWD/tests "$@"
+
+
   cli:
     silent: true
     desc: run cli commands
     cmds:
       - |
+        export IPYTHONDIR=$(pwd)
         uv run ipython
   
   user:

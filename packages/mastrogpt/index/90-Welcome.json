@@ -2,7 +2,7 @@
     {
     "name": "Ollama",
     "url": "mastrogpt/chat",
-    "users": ["admin", "chat"]
+    "users": ["admin"]
    },
    {
     "name": "Display",

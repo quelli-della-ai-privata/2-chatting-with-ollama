@@ -20,9 +20,12 @@ html: true
 # Agenda
 
 1. Connecting to Ollama
-2. List models
-3. A Simple Chat
-4. Add Tests
+2. Login and Deploy
+3. List models
+4. A Simple Chat
+5. Add Tests
+
+## PLEASE USE THE DEVCONTAINER
 
 ---
 # 1. Connecting to Ollama
@@ -43,23 +46,38 @@ curl $URL
 echo OLLAMA_URL=$URL >.env
 ```
 
+---
+# 2. Login and deploy
+
+```
+ops ide login devel http://miniops.me
+ops ide deploy
+# default password is GPTmaster
+
+```
+## Change the passwords!
+`ops tools user demo --update`
+`ops tools user admin --update`
+
 --- 
 
 # 2. List models
 
 - Use the CLI: `ops tools cli`
 ```python
-import os, requests
 args = {}
+import os, requests
 base = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
 !curl {base}
 ```
 
-```
-url = f"{url}/api/tags"
+```python
+url = f"{base}/api/tags"
 !curl {url} | jq .
 models = requests.get(url).json()
+models
 names = [ i.get("name") for i in models.get("models")]
+names
 ```
 
 ---
@@ -67,7 +85,7 @@ names = [ i.get("name") for i in models.get("models")]
 # Create the action and pass the secrets
 
 ```
-ops tools new models ollama
+!ops tools new models exercise
 ```
 
 Add in `__main__.py`
@@ -78,7 +96,7 @@ Add in `__main__.py`
 
 Note that if you deploy:
 
-```
+```shell
 ops ide login devel http://miniops.me
 ops ide deploy ollama/models
 ```

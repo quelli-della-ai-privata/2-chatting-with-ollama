@@ -1,12 +1,12 @@
 [
    {
     "name": "Models",
-    "url": "ollama/models",
+    "url": "solution/models",
     "users": ["admin", "demo"]
    },
    {
     "name": "Chat",
-    "url": "ollama/chat",
+    "url": "solution/chat",
     "users": ["admin", "demo"]
    }
 ]
