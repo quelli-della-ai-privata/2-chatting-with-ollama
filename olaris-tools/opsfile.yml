@@ -12,6 +12,7 @@ tasks:
         set -- ${args[@]}
         # removing the '--' at the beginning required to pass extra flags
         test "$1" = "--" && shift
+        export PYTHONPATH="$OPS_PWD/packages:$OPS_PWD/tests"
         uv run "$@"
 
   test:

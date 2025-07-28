@@ -22,7 +22,7 @@ def set_env():
         try:
             key, value = line.split('=', 1)
             os.environ[key] = value
-            #print("OK:", key)
+            print("OK:", key)
         except:
             print("ERR:", line)
 

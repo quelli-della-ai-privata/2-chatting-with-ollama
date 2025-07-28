@@ -1,13 +1,11 @@
-import sys 
-sys.path.append("packages/solution/chat")
-import chat
+import solution.chat.chat as m
 
 def test_chat():
     # no args
     args = {}
-    res = chat.chat(args)
+    res = m.chat(args)
     assert res["output"].find("llama") != -1
 
     args = {"input": "What is the capital of Italy, in English?"}
-    res = chat.chat(args)
+    res = m.chat(args)
     assert res["output"].find("Rome") != -1

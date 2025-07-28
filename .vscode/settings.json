@@ -1,8 +1,11 @@
 {
-    "python.testing.pytestArgs": [
-        "tests"
-    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/olaris-tools/.venv/bin/python",
+    "python.testing.pytestPath": "${workspaceFolder}/olaris-tools/.venv/bin/pytest",
+    "pythonTestExplorer.testFramework": "pytest",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.defaultInterpreterPath": "${workspaceFolder}/olaris-tools/.venv/bin/python"
+    "python.analysis.extraPaths": [
+        "packages",
+        "tests"
+    ]
 }

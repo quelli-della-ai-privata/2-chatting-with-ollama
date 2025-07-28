@@ -1,6 +1,6 @@
 {
 	"name": "Agent41",
-	"image": "ghcr.io/mastrogpt/agent41-starter:2506201530",
+	"image": "ghcr.io/quelli-della-ai-privata/devcontainer:25.0728.1319",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"remoteUser": "node",
 	"containerEnv": {
@@ -10,7 +10,8 @@
     "--network=host"
     ],
     "remoteEnv": {
-        "OPS_BRANCH": "main"
+        "OPS_BRANCH": "main",
+		"PYTHONPATH": "/workspaces/${localWorkspaceFolderBasename}/packages"
     },
 	"postCreateCommand": "ops -update ; ops tools run welcome.py",
 	"customizations": {
@@ -19,7 +20,6 @@
 				"pgant.antonio-ops-vscode-extension@1.3.2",
 				"ms-python.python",
 				"ms-vscode.test-adapter-converter",
-				"pamaron.pytest-runner",
 				"marp-team.marp-vscode",
 				"ryuta46.multi-command",
 				"george-alisson.html-preview-vscode",
