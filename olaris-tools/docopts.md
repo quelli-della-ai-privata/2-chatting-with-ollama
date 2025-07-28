@@ -7,9 +7,10 @@ Tools tasks to generate code.
 ```text
 Usage:
   tools cli
-  tools run [<args>...]
-  tools test [<args>...]
-  tools new <action> [<package>]
+  tools run  [<args>...]
+  tools test [<action>]
+  tools new  <action> [<package>] [--force]
+  tools unnew  <action> [<package>]
   tools user [<user>] [--add|--remove|--update]
 ```
 

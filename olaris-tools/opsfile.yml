@@ -3,12 +3,12 @@ version: 3
 tasks:
 
   run:
-    silent: false
-    desc: initialize the project
+    silent: true
+    desc: run a script
     cmds:
       - |
         args={{._args_}} 
-        # exanded and assigned to positional parameter
+        # expanded and assigned to positional parameter
         set -- ${args[@]}
         # removing the '--' at the beginning required to pass extra flags
         test "$1" = "--" && shift
@@ -16,7 +16,7 @@ tasks:
         uv run "$@"
 
   test:
-    silent: false
+    silent: true
     desc: initialize the project
     cmds:
       - |
@@ -28,9 +28,14 @@ tasks:
         #uv run pytest $OPS_PWD/tests "$@"
         HERE=$(pwd)
         cd $OPS_PWD
-        $HERE/.venv/bin/pytest "$@"
+        if test -z "{{._action_}}" 
+        then "$HERE/.venv/bin/pytest"
+        else
+          PACKAGE="$(echo '{{._action_}}' | cut -d'/' -f1)"
+          NAME="$(echo '{{._action_}}' | cut -d'/' -f2)"
+          "$HERE/.venv/bin/pytest" tests/$PACKAGE/test_${PACKAGE}_${NAME}*.py
+        fi
         
-
 
   cli:
     silent: true
@@ -47,6 +52,33 @@ tasks:
       - |
         uv run user.py "{{._user_}}" "{{.__add}}" "{{.__remove}}" "{{.__update}}" 
 
+
+  unnew:
+    silent: true
+    desc: remove generated  python action
+    ignore_errors: true
+    env:
+       ACTION: "{{._action_}}"
+       PACKAGE: "{{or ._package_ ._action_}}"
+       DIR:  "packages/{{or ._package_ ._action_}}/{{._action_}}"
+       FILE: "packages/{{or ._package_ ._action_}}/{{._action_}}/{{._action_}}.py"
+    cmds:
+    - > 
+      rm -rvf
+      $OPS_PWD/packages/$PACKAGE/$ACTION/__pycache__/ 
+      $OPS_PWD/tests/$PACKAGE/__pycache__/ 
+      $OPS_PWD/packages/$PACKAGE/$ACTION.zip
+    - > 
+       rm -vf
+       $OPS_PWD/packages/$PACKAGE/${ACTION}/__main__.py
+       $OPS_PWD/packages/$PACKAGE/${ACTION}/${ACTION}.py
+       $OPS_PWD/tests/$PACKAGE/test_${PACKAGE}_${ACTION}.py
+       $OPS_PWD/tests/$PACKAGE/test_${PACKAGE}_${ACTION}_int.py
+    - >
+      rmdir $OPS_PWD/packages/$PACKAGE/$ACTION 
+      $OPS_PWD/packages/$PACKAGE
+      $OPS_PWD/tests/$PACKAGE
+
   new:
     silent: true
     desc: generate a new python action
@@ -56,7 +88,10 @@ tasks:
        DIR:  "packages/{{or ._package_ ._action_}}/{{._action_}}"
        FILE: "packages/{{or ._package_ ._action_}}/{{._action_}}/{{._action_}}.py"
     cmds:
-    - test ! -e "$OPS_PWD/$FILE" || die "file already exists"
+    - |
+      if ! {{.__force}}
+      then test ! -e "$OPS_PWD/$FILE" || die "file already exists"
+      fi
     - |
       mkdir -p $OPS_PWD/tests/$PACKAGE
       mkdir -p $OPS_PWD/$DIR
@@ -74,20 +109,20 @@ tasks:
         return { "body": $ACTION.$ACTION(args) }
       EOF
     - |
-      cat <<EOF >$OPS_PWD/tests/$PACKAGE/test_${ACTION}.py
-      import sys 
-      sys.path.append("$DIR")
-      import $ACTION
+      cat <<EOF >$OPS_PWD/tests/$PACKAGE/test_${PACKAGE}_${ACTION}.py
+      import $PACKAGE.$ACTION.$ACTION as m
       
-      def test_$ACTION():
-          res = $ACTION.$ACTION({})
+      def test_${PACKAGE}_$ACTION():
+          args = {}
+          res = m.$ACTION(args)
           assert res["output"] == "$ACTION"
       EOF
     - |
-      cat <<EOF >$OPS_PWD/tests/$PACKAGE/test_${ACTION}_int.py
+      cat <<EOF >$OPS_PWD/tests/$PACKAGE/test_${PACKAGE}_${ACTION}_int.py
       import os, requests as req
-      def test_$ACTION():
-          url = os.environ.get("OPSDEV_HOST", "") + "/api/my/$PACKAGE/$ACTION"
+
+      def test_${PACKAGE}_${ACTION}_int():
+          url = f"{os.environ.get("OPSDEV_HOST", "")}/api/my/$PACKAGE/$ACTION"
           res = req.get(url).json()
           assert res.get("output") == "$ACTION"
       EOF

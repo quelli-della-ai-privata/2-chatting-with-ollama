@@ -42,6 +42,7 @@ curl $URL
 ````
 
 - Save the password in `OLLAMA_API_HOST`
+
 ```
 echo OLLAMA_URL=$URL >.env
 ```
@@ -52,12 +53,17 @@ echo OLLAMA_URL=$URL >.env
 ```
 ops ide login devel http://miniops.me
 ops ide deploy
+ops  tools test
 # default password is GPTmaster
-
 ```
+
 ## Change the passwords!
-`ops tools user demo --update`
-`ops tools user admin --update`
+```
+ops tools user demo --update
+ops tools user admin --update
+ops ide deploy mastrogpt/login
+```
+
 
 --- 
 
@@ -73,7 +79,7 @@ base = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
 
 ```python
 url = f"{base}/api/tags"
-!curl {url} | jq .
+!curl -s {url} | jq .
 models = requests.get(url).json()
 models
 names = [ i.get("name") for i in models.get("models")]
@@ -82,45 +88,35 @@ names
 
 ---
 
-# Create the action and pass the secrets
+# Create the action 
 
 ```
-!ops tools new models exercise
+ops tools new models exercise
 ```
 
-Add in `__main__.py`
-
-```shell
-#--param "OLLAMA_URL" "$OLLAMA_URL"
-```
-
-Note that if you deploy:
+Login and Deploy
 
 ```shell
 ops ide login devel http://miniops.me
-ops ide deploy ollama/models
+ops ide deploy exercise/models
 ```
 
-there is the option `--param OLLAMA_URL "$OLLAMA_URL"`
+Run Tests
+
+```
+ops tests
+```
 
 ---
 
 # Write the `models` action
 
-- Create Action
-`ops tools new models exercise`
+Add in `__main__.py`: `#--param "OLLAMA_URL" "$OLLAMA_URL"`
+
 - Write Action Code
 - Add to the index
 - Deploy `ops ide deploy`
 - Invoke `ops invoke exercise/models`
-
----
-
-# Exercise
-
-- Modify the `models` so you can:
-- Read the input (`args.get("input")`)
-- Show all the informations of a model selected by input
 
 --- 
 # 3. Let's chat with Ollama
@@ -153,11 +149,11 @@ print(res.get("response"))
 
 ---
 
-# Exercise
+# Exercise 1
 
-Implement the tests!
+- Modify models so you can see informations of a single model
 
-- test_models
-- test_models_int
-- test_chat
-- test_chat_int
+# Exercise 2
+
+- Modify the chat to be able to change model
+
