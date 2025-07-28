@@ -25,7 +25,11 @@ tasks:
         set -- ${args[@]}
         # removing the '--' at the beginning required to pass extra flags
         test "$1" = "--" && shift
-        uv run pytest $OPS_PWD/tests "$@"
+        #uv run pytest $OPS_PWD/tests "$@"
+        HERE=$(pwd)
+        cd $OPS_PWD
+        $HERE/.venv/bin/pytest "$@"
+        
 
 
   cli:
