@@ -14,47 +14,54 @@ html: true
 
 # A chat application
 
-### Develop a chat application connecting to Ollama
+### Developing a custom chat interface to Ollama
 
 ---
 # Agenda
 
 1. Connecting to Ollama
 2. List models
-3. Simple Chat
-4. Add streaming
+3. A Simple Chat
+4. Add Tests
 
 ---
 # 1. Connecting to Ollama
 
-- Ensure the OLLAMA_API_HOST is correct
-
 ```
 read -s PASS
 export URL=https://demo:$PASS@ollamatest.nuvolaris.io
+````
+
+- Ensure the URL is correct
+
+```
 curl $URL
-```
+````
 
-- Connecting to Ollama
-
+- Save the password in `OLLAMA_API_HOST`
 ```
-ops ide login devel http://miniops.me
 echo OLLAMA_URL=$URL >.env
 ```
+
 --- 
 
 # 2. List models
 
+- Use the CLI: `ops tools cli`
 ```python
 import os, requests
 args = {}
-url = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
-!curl {url}
-url_models = f"{url}/api/tags"
-!curl {url_models} | jq .
-models = requests.get(url_models).json()
+base = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
+!curl {base}
+```
+
+```
+url = f"{url}/api/tags"
+!curl {url} | jq .
+models = requests.get(url).json()
 names = [ i.get("name") for i in models.get("models")]
 ```
+
 ---
 
 # Create the action and pass the secrets
@@ -72,6 +79,7 @@ Add in `__main__.py`
 Note that if you deploy:
 
 ```
+ops ide login devel http://miniops.me
 ops ide deploy ollama/models
 ```
 
@@ -79,22 +87,22 @@ there is the option `--param OLLAMA_URL "$OLLAMA_URL"`
 
 ---
 
-# Deploy the `models` action
+# Write the `models` action
 
 - Create Action
-`ops tools new models ollama`
+`ops tools new models exercise`
 - Write Action Code
 - Add to the index
 - Deploy `ops ide deploy`
-- Invoke `ops invoke ollama/models`
+- Invoke `ops invoke exercise/models`
 
 ---
 
 # Exercise
 
 - Modify the `models` so you can:
-   - Read the input (`args.get("input")`)
-   - Show all the informations of a model selected by input
+- Read the input (`args.get("input")`)
+- Show all the informations of a model selected by input
 
 --- 
 # 3. Let's chat with Ollama

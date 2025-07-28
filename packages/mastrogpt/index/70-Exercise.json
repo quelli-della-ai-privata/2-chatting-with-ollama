@@ -1,0 +1,13 @@
+[
+   {
+    "name": "Models",
+    "url": "exercise/models",
+    "users": ["admin", "demo"]
+   },
+   {
+    "name": "Chat",
+    "url": "exercise/chat",
+    "users": ["admin", "demo"]
+   }
+]
+ 

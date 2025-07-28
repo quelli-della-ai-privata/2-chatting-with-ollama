@@ -1,5 +1,5 @@
 import sys 
-sys.path.append("packages/ollama/models")
+sys.path.append("packages/solution/models")
 import models
 
 def test_models():

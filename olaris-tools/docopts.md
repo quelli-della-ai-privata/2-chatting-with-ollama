@@ -6,8 +6,8 @@ Tools tasks to generate code.
 
 ```text
 Usage:
-  tools venv
   tools cli
+  tools run [<args>...]
   tools new <action> [<package>]
   tools user [<user>] [--add|--remove|--update]
 ```

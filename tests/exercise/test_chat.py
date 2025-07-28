@@ -1,5 +1,5 @@
 import sys 
-sys.path.append("packages/ollama/chat")
+sys.path.append("packages/exercise/chat")
 import chat
 
 def test_chat():

@@ -2,12 +2,17 @@ version: 3
 
 tasks:
 
-  venv:
+  run:
     silent: true
     desc: initialize the project
     cmds:
       - |
-        uv venv
+        args={{._args_}} 
+        # exanded and assigned to positional parameter
+        set -- ${args[@]}
+        # removing the '--' at the beginning required to pass extra flags
+        test "$1" = "--" && shift
+        uv run "$@"
 
   cli:
     silent: true
