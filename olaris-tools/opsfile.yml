@@ -68,7 +68,7 @@ tasks:
       cat <<EOF >$OPS_PWD/tests/$PACKAGE/test_${ACTION}_int.py
       import os, requests as req
       def test_$ACTION():
-          url = os.environ.get("OPSDEV_HOST") + "/api/my/$PACKAGE/$ACTION"
+          url = os.environ.get("OPSDEV_HOST", "") + "/api/my/$PACKAGE/$ACTION"
           res = req.get(url).json()
           assert res.get("output") == "$ACTION"
       EOF
