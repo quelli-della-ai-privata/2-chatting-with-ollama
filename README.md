@@ -67,7 +67,7 @@ ops ide deploy mastrogpt/login
 
 --- 
 
-# 2. List models
+# 3. List models
 
 - Use the CLI: `ops tools cli`
 ```python
@@ -111,21 +111,40 @@ ops tests
 
 # Write the `models` action
 
-Add in `__main__.py`: `#--param "OLLAMA_URL" "$OLLAMA_URL"`
-
-- Write Action Code
+- Add in `__main__.py`: `#--param "OLLAMA_URL" "$OLLAMA_URL"`
+- **Write Action Code**
 - Add to the index
 - Deploy `ops ide deploy`
 - Invoke `ops invoke exercise/models`
 
+---
+# `models` blueprint
+
+```python
+def models(args):
+
+  # get the url to access ollama models
+  #TODO: models - get the url
+  url = "???" 
+
+  # list the models
+  # TODO: models - get the models
+  out =  "models"
+
+  # return the output
+  return {
+    "output": out
+  }
+```
+
 --- 
-# 3. Let's chat with Ollama
+# 4. Let's chat with Ollama
 
 ```python
 import os, requests
 args = {}
-url = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
-url_generate = f"{url}/api/generate"
+base = args.get("OLLAMA_URL", os.getenv("OLLAMA_URL"))
+url = f"{base}/api/generate"
 ```
 
 You require a post request: 
@@ -134,18 +153,31 @@ You require a post request:
 MODEL = "llama3.1:8b"
 PROMPT = "who are you"
 msg = {"model":MODEL, "prompt": PROMPT, "stream": False}
-res = requests.post(url_generate, json=msg, stream=False).json()
+res = requests.post(url, json=msg, stream=False).json()
 res
 print(res.get("response"))
 ```
 
 ---
 
-# Chat action blueprint
+# `chat` blueprint:
 
-- read `input`
-- invoke ollama
-- return `output`
+```python
+def chat(args):
+  # TODO: default message
+  out = "chat"
+  inp = args.get("input", "")
+  if inp != "":
+      # TODO: chat - get the url
+      url = "???"
+      # TODO: chat - prepare the message 
+      msg = {}
+      # TODO: chat - send the message ollama
+      res = {}
+      # TODO: chat: return the response
+      out =  "???"
+  return { "output": out}
+```
 
 ---
 

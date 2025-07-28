@@ -1,6 +1,6 @@
 {
 	"name": "Agent41",
-	"image": "ghcr.io/quelli-della-ai-privata/devcontainer:25.0728.1319",
+	"image": "ghcr.io/quelli-della-ai-privata/devcontainer:25.0728.1919",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"remoteUser": "node",
 	"containerEnv": {
